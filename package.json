@@ -1,0 +1,11 @@
+{
+  "name": "eeg-pretraining-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A dependency-free static explorer for EEG pretraining evaluation.",
+  "scripts": {
+    "preview": "node scripts/serve.mjs",
+    "test": "node --test tests/core.test.cjs",
+    "check": "node --check app.js && node --check core.js && node --check config.js && node --test tests/core.test.cjs"
+  }
+}
