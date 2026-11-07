@@ -202,7 +202,7 @@
       const v = r.performance[state.performance]?.[s];
       return `<td>${fmt(v?.mean)}${state.spread && v?.spread != null ? ` <span class="muted-spread">± ${fmt(v.spread)}</span>` : ""}</td>`;
     }).join("")}</tr>`).join("") : '<tr><td colspan="7" class="empty-results">No matching models. Try another name.</td></tr>';
-    byId("results-note").textContent = `${filtered.length} of ${currentRecords().length} models · ${state.dataset} · LOSO. Performance columns follow the metric selector above. ${state.spread ? "± values are preserved as reported; the source does not specify their dispersion definition. " : "Means shown. "}Downloads include all performance metrics and reported spreads.`;
+    byId("results-note").textContent = `${filtered.length} of ${currentRecords().length} models · ${state.dataset} · LOSO. Performance columns follow the metric selector above. ${state.spread ? "± values are preserved as reported; the source does not specify their dispersion definition." : "Means shown."}`;
   }
 
   function renderModels() {
@@ -236,7 +236,7 @@
       document.body.appendChild(a); a.click(); a.remove(); return;
     }
     const labels = {
-      repositoryUrl: ["The project repository is coming soon.", "The project’s GitHub repository has not been linked yet. You can explore the results and download the data directly from this page."],
+      repositoryUrl: ["The project repository is coming soon.", "The project’s GitHub repository has not been linked yet. You can explore the evaluation results on this page."],
       submissionUrl: ["Model submissions are coming soon.", "The GitHub submission guide and evaluation package will be linked here once they are available."],
       feedbackUrl: ["The feedback page is coming soon.", "A GitHub page for questions, corrections, and feedback will be linked here once it is available."],
       paperUrl: ["The paper link is coming soon.", "The research paper will be linked here when its public version is available. You can read the evaluation framework on this page."],
@@ -263,7 +263,6 @@
   byId("performance-metric").addEventListener("change", event => { state.performance = event.target.value; renderPerformance(); renderResults(); });
   byId("model-search").addEventListener("input", event => { state.search = event.target.value; renderResults(); });
   byId("show-spread").addEventListener("change", event => { state.spread = event.target.checked; renderResults(); });
-  byId("download-current").addEventListener("click", () => download(core.csv(currentRecords()), `${state.dataset}-results.csv`));
   byId("download-ranking").addEventListener("click", () => {
     const rows = core.rank(currentRecords(), state.metric);
     const text = "\ufeffrank,dataset,model," + state.metric.toUpperCase() + "\r\n" + rows.map(r => `${r.rank ?? ""},${r.dataset},${r.model},${r.metrics[state.metric] ?? ""}`).join("\r\n");
@@ -272,7 +271,7 @@
   dialog.querySelectorAll(".dialog-close,.dialog-done").forEach(b => b.addEventListener("click", () => dialog.close()));
   dialog.addEventListener("click", event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
   byId("dataset-tabs").innerHTML = data.datasets.map(d => `<button data-dataset="${escape(d.id)}" aria-pressed="false">${escape(d.label)}</button>`).join("");
-  byId("source-details").innerHTML = `<p><strong>Data provenance.</strong> Imported ${escape(new Date(data.importedAt).toISOString().slice(0, 10))}. Both original workbooks are preserved. ${data.records.length * 3} proposed metric values were cross-checked against the reported κ means.</p><ul class="source-list">${data.sources.map(s => `<li>${escape(s.name)}<br><code>SHA-256: ${escape(s.sha256)}</code></li>`).join("")}</ul><p>Download the <a class="text-link" href="data/results.json" download>JSON data</a> for source worksheet and cell ranges, or the <a class="text-link" href="data/results.csv" download>complete CSV</a> for numerical reuse. Model descriptions link to their original papers and official code; they summarize the published method rather than identifying the evaluated checkpoint.</p>`;
+  byId("source-details").innerHTML = `<p><strong>Data provenance.</strong> Results are compiled from evaluation records for the Frozen, Fine-tuned, and Scratch settings. All ${data.records.length * 3} proposed metric values were cross-checked against the corresponding mean κ values.</p><p>Model descriptions link to their original papers and official code; they summarize the published methods rather than identifying the evaluated checkpoints.</p>`;
   state.model = core.rank(currentRecords(), "pvs")[0].model;
   renderDataset(); renderMatrix(); renderModels();
 })();
